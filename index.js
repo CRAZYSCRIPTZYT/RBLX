@@ -1,15 +1,21 @@
+// index.js
 const express = require('express');
-const fetch = require('node-fetch');
+const fetch = require('node-fetch'); // used to fetch stock data
 const app = express();
-const PORT = process.env.PORT || 3000;
-const STOCK_SYMBOL = "RBLX";
 
+const PORT = process.env.PORT || 3000; // Railway will assign a port
+const STOCK_SYMBOL = "RBLX"; // Roblox stock symbol
+
+// Route for /stock
 app.get('/stock', async (req, res) => {
     try {
+        // Fetch stock data from Yahoo Finance
         const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${STOCK_SYMBOL}`);
         const data = await response.json();
+
         const stock = data.quoteResponse.result[0];
 
+        // Return JSON
         res.json({
             symbol: stock.symbol,
             price: stock.regularMarketPrice,
@@ -21,8 +27,12 @@ app.get('/stock', async (req, res) => {
             timestamp: new Date().toISOString()
         });
     } catch (err) {
-        res.status(500).json({ error: "Failed to fetch stock" });
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch stock data" });
     }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
